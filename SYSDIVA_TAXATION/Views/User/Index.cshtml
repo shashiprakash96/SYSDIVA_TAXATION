@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "User List";
+}
+
+
+<h2 class="text-center">User List</h2>
+
+<button asp-controller="User" asp-action="ExportToExcel" onclick="downloadExcel()" class="btn btn-success">Download Excel</button>
+<a @*asp-controller="User" asp-action="Insert"*@ class="btn btn-primary" id="btnAddEmployee">Add Employee</a>
+<style>
+    .search-container {
+        display: flex;
+        justify-content: flex-end; /* Moves content to the right */
+        margin-bottom: 10px;
+    }
+
+    #searchBox {
+        padding: 8px;
+        width: 250px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .btn-left {
+        background-color: blue;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-right {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+<h3>Search Students</h3>
+<input type="text" id="searchBox" placeholder="Search by name or email...">
+<table id="userTable" class="table table-bordered">
+    <thead>
+        <tr class="text-center">
+            <th class="text-center">ID</th>
+            <th class="text-center">Name</th>
+            <th class="text-center">Email</th>
+            <th class="text-center">Age</th>
+            <th class="text-center">Salary</th>
+            <th class="text-center">Gender</th>
+            <th class="text-center">Created On</th>
+            <th class="text-center">Is Active</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody class="text-center"></tbody>
+</table>
+<div class="modal fade" id="ModalEmployee">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Add User</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="registrationForm">
+                <form  method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Name" class="font-weight-bold">Name</label>
+                                <input type="text" id="Name" class="form-control" placeholder="Enter name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Email" class="font-weight-bold">Email</label>
+                                <input type="email" id="Email" class="form-control" placeholder="Enter email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Age" class="font-weight-bold">Age</label>
+                                <input type="number" id="Age" class="form-control" placeholder="Enter age">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Salary" class="font-weight-bold">Salary</label>
+                                <input type="number" id="Salary" class="form-control" placeholder="Enter salary">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Gender" class="font-weight-bold">Gender</label>
+                                <select id="Gender" class="form-control">
+                                    <option value="" disabled selected>Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="CreatedOn" class="font-weight-bold">Created On</label>
+                                <input type="date" id="CreatedOn" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check mb-3">
+                                <input type="checkbox" id="isActive" class="form-check-input">
+                                <label for="isActive" class="form-check-label font-weight-bold">Is Active</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-success btn-left "  onclick="AddUser()">Submit</button>
+                        <button type="button" class="btn btn-danger btn-right" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/site.js"></script>
+
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+

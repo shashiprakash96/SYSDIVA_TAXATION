@@ -1,0 +1,45 @@
+﻿@*@model IEnumerable<SYSDIVA_TAXATION.Models.Student>*@
+
+@{
+    ViewData["Title"] = "GetStudentList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card-header">
+    <h1 class="text-center">List Of Student</h1>
+</div>
+<a asp-controller="Student" asp-action="AddNewStudent" class="btn btn-primary" id="btnAddEmployee">Add New Student</a>
+<a href="/Student/DownloadPdf" class="btn btn-primary">Download PDF</a>
+
+<table id="userTable" class="table table-bordered">
+    <thead>
+        <tr class="text-center">
+            <th class="text-center">Id</th>
+            <th class="text-center">Name</th>
+            <th class="text-center">Class</th>
+             <th class="text-center">Email</th>
+             <th class="text-center">Age</th>
+            
+            <th class="text-center">Status</th>
+            <th class="text-center">Update||Delete</th>
+        </tr>
+    </thead>
+    <tbody class="text-center">
+        @*@foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Age</td>
+                    <td>@item.Class</td>
+                    <td>@item.Email</td>
+                    <td>@item.IsActive</td>
+
+                </tr>
+            }*@
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="~/js/Student.js"></script>
