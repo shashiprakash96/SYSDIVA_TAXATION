@@ -210,6 +210,191 @@ namespace SYSDIVA_TAXATION.Repositories
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        //-------------------product-------------
+        public void InsertProduct(Product p)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            string query = @"INSERT INTO ProductGST (ProductName, Price, TaxRate, CGSTAmount, SGSTAmount, TotalAmount)
+                         VALUES (@ProductName, @Price, @TaxRate, @CGSTAmount, @SGSTAmount, @TotalAmount)";
+            SqlCommand cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@ProductName", p.ProductName);
+            cmd.Parameters.AddWithValue("@Price", p.Price);
+            cmd.Parameters.AddWithValue("@TaxRate", p.TaxRate);
+            cmd.Parameters.AddWithValue("@CGSTAmount", p.CGSTAmount);
+            cmd.Parameters.AddWithValue("@SGSTAmount", p.SGSTAmount);
+            cmd.Parameters.AddWithValue("@TotalAmount", p.TotalAmount);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+        public List<Product> GetAll()
+        {
+            List<Product> list = new List<Product>();
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM ProductGST", conn);
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new Product
+                {
+                    Id = (int)reader["Id"],
+                    ProductName = reader["ProductName"].ToString(),
+                    Price = (decimal)reader["Price"],
+                    TaxRate = (decimal)reader["TaxRate"],
+                    CGSTAmount = (decimal)reader["CGSTAmount"],
+                    SGSTAmount = (decimal)reader["SGSTAmount"],
+                    TotalAmount = (decimal)reader["TotalAmount"]
+                });
+            }
+            return list;
+        }
+
+        public void Delete(int id)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            SqlCommand cmd = new SqlCommand("DELETE FROM ProductGST WHERE Id = @Id", conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+        //public Wallet GetWallet()
+        //{
+        //    using SqlConnection conn = new SqlConnection(_connectionString);
+        //    string query = "SELECT TOP 1 * FROM Wallet";
+        //    SqlCommand cmd = new SqlCommand(query, conn);
+        //    conn.Open();
+        //    SqlDataReader reader = cmd.ExecuteReader();
+        //    Wallet wallet = new Wallet();
+        //    if (reader.Read())
+        //    {
+        //        wallet.Id = (int)reader["Id"];
+        //        wallet.Balance = (decimal)reader["Balance"];
+        //    }
+        //    return wallet;
+        //}
+        //public void UpdateBalance(int id, decimal newBalance)
+        //{
+        //    using SqlConnection conn = new SqlConnection(_connectionString);
+        //    string query = "UPDATE Wallet SET Balance = @Balance WHERE Id = @Id";
+        //    SqlCommand cmd = new SqlCommand(query, conn);
+        //    cmd.Parameters.AddWithValue("@Balance", newBalance);
+        //    cmd.Parameters.AddWithValue("@Id", id);
+        //    conn.Open();
+        //    cmd.ExecuteNonQuery();
+        //}
+        public decimal GetWalletBalance()
+        {
+            using SqlConnection con = new SqlConnection(_connectionString);
+            SqlCommand cmd = new SqlCommand("SELECT TOP 1 Balance FROM Wallet", con);
+            con.Open();
+            return Convert.ToDecimal(cmd.ExecuteScalar());
+        }
+
+        public void AddTransaction(decimal amount, string type)
+        {
+            using SqlConnection con = new SqlConnection(_connectionString);
+            con.Open();
+
+            SqlTransaction tran = con.BeginTransaction();
+
+            try
+            {
+                string updateWallet = type == "Add"
+                    ? "UPDATE Wallet SET Balance = Balance + @Amount"
+                    : "UPDATE Wallet SET Balance = Balance - @Amount";
+
+                SqlCommand cmd1 = new SqlCommand(updateWallet, con, tran);
+                cmd1.Parameters.AddWithValue("@Amount", amount);
+                cmd1.ExecuteNonQuery();
+
+                SqlCommand cmd2 = new SqlCommand("INSERT INTO Transactions (Amount, Type, Date) VALUES (@Amount, @Type, GETDATE())", con, tran);
+                cmd2.Parameters.AddWithValue("@Amount", amount);
+                cmd2.Parameters.AddWithValue("@Type", type);
+                cmd2.ExecuteNonQuery();
+
+                tran.Commit();
+            }
+            catch
+            {
+                tran.Rollback();
+                throw;
+            }
+        }
+
+        public List<Transaction> GetTransactions()
+        {
+            List<Transaction> list = new List<Transaction>();
+            using SqlConnection con = new SqlConnection(_connectionString);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Transactions ORDER BY Date DESC", con);
+            con.Open();
+            using SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new Transaction
+                {
+                    Id = (int)rdr["Id"],
+                    Amount = (decimal)rdr["Amount"],
+                    Type = rdr["Type"].ToString(),
+                    Date = (DateTime)rdr["Date"]
+                });
+            }
+            return list;
+        }
+        public List<FoodItem> GetFoodItems()
+        {
+            List<FoodItem> list = new List<FoodItem>();
+            using SqlConnection con = new SqlConnection(_connectionString);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM FoodItems", con);
+            con.Open();
+            using SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                list.Add(new FoodItem
+                {
+                    Id = (int)rdr["Id"],
+                    Name = rdr["Name"].ToString(),
+                    Price = (decimal)rdr["Price"]
+                });
+            }
+            return list;
+        }
+
+        public void SaveBill(string customerName, List<BillItem> items)
+        {
+            decimal total = items.Sum(x => x.SubTotal);
+            using SqlConnection con = new SqlConnection(_connectionString);
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();
+            try
+            {
+                SqlCommand cmd1 = new SqlCommand(
+     "INSERT INTO Bills (CustomerName, TotalAmount) OUTPUT INSERTED.BillId VALUES (@Name, @Total)",
+     con, tran);
+                cmd1.Parameters.AddWithValue("@Name", customerName);
+                cmd1.Parameters.AddWithValue("@Total", total);
+                int billId = (int)cmd1.ExecuteScalar();
+
+                foreach (var item in items)
+                {
+                    SqlCommand cmd2 = new SqlCommand(
+                        "INSERT INTO BillItems (BillId, FoodItemId, Quantity, SubTotal) VALUES (@BId, @FId, @Qty, @Sub)",
+                        con, tran);
+                    cmd2.Parameters.AddWithValue("@BId", billId);
+                    cmd2.Parameters.AddWithValue("@FId", item.FoodItemId);
+                    cmd2.Parameters.AddWithValue("@Qty", item.Quantity);
+                    cmd2.Parameters.AddWithValue("@Sub", item.SubTotal);
+                    cmd2.ExecuteNonQuery();
+                }
+
+                tran.Commit();
+            }
+            catch
+            {
+                tran.Rollback();
+                throw;
+            }
+        }
+
 
 
     }

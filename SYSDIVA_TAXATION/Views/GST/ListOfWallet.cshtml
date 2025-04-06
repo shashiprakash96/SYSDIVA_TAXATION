@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewData["Title"] = "ListOfWallet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model List<Transaction>
+@{
+    ViewData["Title"] = "Wallet";
+}
+
+<h2>Wallet Balance: ₹@ViewBag.Balance</h2>
+
+@if (TempData["Error"] != null)
+{
+    <p style="color:red">@TempData["Error"]</p>
+}
+
+<form asp-action="AddWithdraw" method="post">
+    <input type="number" step="0.01" name="amount" placeholder="Enter Amount" required />
+    <select name="type">
+        <option value="Add">Add</option>
+        <option value="Withdraw">Withdraw</option>
+    </select>
+    <button type="submit">Submit</button>
+</form>
+
+<hr />
+
+<h3>Transaction History</h3>
+<table border="1" cellpadding="5" class="table table-bordered ">
+    <tr><th>Date</th><th>Type</th><th>Amount</th></tr>
+    @foreach (var tx in Model)
+    {
+        <tr>
+            <td>@tx.Date.ToString("g")</td>
+            <td>@tx.Type</td>
+            <td>₹@tx.Amount</td>
+        </tr>
+    }
+</table>

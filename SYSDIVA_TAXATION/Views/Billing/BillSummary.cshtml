@@ -1,0 +1,17 @@
+﻿@model BillViewModel
+<h2>Customer: @Model.CustomerName</h2>
+<table border="1">
+    <tr><th>Item</th><th>Qty</th><th>Subtotal</th></tr>
+    @foreach (var item in Model.SelectedItems)
+    {
+        <tr>
+            <td>@item.FoodName</td>
+            <td>@item.Quantity</td>
+            <td>@item.SubTotal</td>
+        </tr>
+    }
+    <tr>
+        <td>Total Amount: ₹@Model.TotalAmount</td>
+    </tr>
+</table>
+

@@ -1,0 +1,30 @@
+﻿
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model BillViewModel
+<h2>Create Bill</h2>
+
+<form asp-action="Create" method="post">
+    <label>Customer Name:</label>
+    <input type="text" name="CustomerName" required />
+
+    <table border="1">
+        <tr><th>Item</th><th>Price</th><th>Quantity</th></tr>
+        @for (int i = 0; i < Model.FoodItems.Count; i++)
+        {
+            <tr>
+                <td>@Model.FoodItems[i].Name</td>
+                <td>@Model.FoodItems[i].Price</td>
+                <td>
+                    <input type="hidden" name="foodIds" value="@Model.FoodItems[i].Id" />
+                    <input type="number" name="quantities" value="0" min="0" />
+                </td>
+            </tr>
+        }
+    </table>
+
+    <button type="submit">Generate Bill</button>
+</form>
