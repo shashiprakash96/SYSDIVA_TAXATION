@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewData["Title"] = "StartTest";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model TestViewModel
+    <div>
+        <strong>Time Remaining: <span id="timer">10:00</span></strong>
+    </div>
+<p>@TempData["StartTime"]</p>
+<form asp-action="SubmitTest" method="post">
+    <input type="text" name="UserName" placeholder="Enter your name" required />
+    <hr />
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        <div>
+            <p><b>Q@(i + 1): @Model.Questions[i].QuestionText</b></p>
+            <input type="hidden" name="Questions[@i].QuestionId" value="@Model.Questions[i].Id" />
+            <input type="hidden" name="Questions[@i].QuestionText" value="@Model.Questions[i].QuestionText" />
+            <input type="hidden" name="Questions[@i].CorrectOption" value="@Model.Questions[i].CorrectOption" />
+
+            <input type="radio" name="Questions[@i].SelectedOption" value="A" required /> @Model.Questions[i].OptionA <br />
+            <input type="radio" name="Questions[@i].SelectedOption" value="B" /> @Model.Questions[i].OptionB <br />
+            <input type="radio" name="Questions[@i].SelectedOption" value="C" /> @Model.Questions[i].OptionC <br />
+            <input type="radio" name="Questions[@i].SelectedOption" value="D" /> @Model.Questions[i].OptionD <br />
+        </div>
+        <hr />
+    }
+    <button type="submit">Submit Test</button>
+</form>
+
+@section Scripts {
+    <script>
+    let totalTime = 10 * 60; // 10 minutes in seconds
+    const timerDisplay = document.getElementById("timer");
+
+    const timer = setInterval(() => {
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        totalTime--;
+
+        if (totalTime < 0) {
+            clearInterval(timer);
+            alert("Time's up! Submitting your test...");
+            document.forms[0].submit(); // Auto-submit the form
+        }
+    }, 1000);
+    </script>
+}

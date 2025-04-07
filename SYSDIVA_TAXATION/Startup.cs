@@ -1,10 +1,13 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SYSDIVA_TAXATION.Controllers;
 using SYSDIVA_TAXATION.Data;
 using SYSDIVA_TAXATION.Repositories;
 using System;
@@ -25,13 +28,20 @@ namespace SYSDIVA_TAXATION
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-
         {
             services.AddControllersWithViews();
-            
+           services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Autho/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    });
+
+            services.AddSession();
+            services.AddSingleton<IPasswordHasher<LoginUsers>, PasswordHasher<LoginUsers>>();
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-         services.AddScoped<UserRepository>();
+            services.AddScoped<UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,12 +57,15 @@ namespace SYSDIVA_TAXATION
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseSession();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseAuthorization();
+           
 
             app.UseEndpoints(endpoints =>
             {
