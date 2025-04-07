@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SYSDIVA_TAXATION.Controllers;
 using SYSDIVA_TAXATION.Data;
+using SYSDIVA_TAXATION.Models;
 using SYSDIVA_TAXATION.Repositories;
 using System;
 using System.Collections.Generic;
@@ -59,10 +60,10 @@ namespace SYSDIVA_TAXATION
             }
             app.UseSession();
             app.UseAuthentication();
-            app.UseAuthorization();
+           
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthorization();
             app.UseRouting();
 
            

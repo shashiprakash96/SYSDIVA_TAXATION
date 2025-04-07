@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using SYSDIVA_TAXATION.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,17 +33,37 @@ namespace SYSDIVA_TAXATION.Controllers
         {
             if (ModelState.IsValid)
             {
-                var hashedPassword = _passwordHasher.HashPassword(user, user.Password);
-
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    string query = "INSERT INTO Users (Username, Email, Password) VALUES (@Username, @Email, @Password)";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@Username", user.Username);
-                    cmd.Parameters.AddWithValue("@Email", user.Email);
-                    cmd.Parameters.AddWithValue("@Password", hashedPassword);
                     con.Open();
-                    cmd.ExecuteNonQuery();
+
+                    // Check if email already exists
+                    string checkEmailQuery = "SELECT COUNT(*) FROM LoginUsers WHERE Email = @Email";
+                    using (SqlCommand checkCmd = new SqlCommand(checkEmailQuery, con))
+                    {
+                        checkCmd.Parameters.AddWithValue("@Email", user.Email);
+                        int count = (int)checkCmd.ExecuteScalar();
+
+                        if (count > 0)
+                        {
+                            ViewBag.Message = "Email already registered.";
+                            return View(user);
+                        }
+                    }
+
+                    // Hash password
+                    var hashedPassword = _passwordHasher.HashPassword(user, user.Password);
+
+                    // Insert user if email not found
+                    string insertQuery = "INSERT INTO LoginUsers (Username, Email, Password) VALUES (@Username, @Email, @Password)";
+                    using (SqlCommand insertCmd = new SqlCommand(insertQuery, con))
+                    {
+                        insertCmd.Parameters.AddWithValue("@Username", user.Username);
+                        insertCmd.Parameters.AddWithValue("@Email", user.Email);
+                        insertCmd.Parameters.AddWithValue("@Password", hashedPassword);
+
+                        insertCmd.ExecuteNonQuery();
+                    }
                 }
 
                 return RedirectToAction("Login");
@@ -50,6 +71,7 @@ namespace SYSDIVA_TAXATION.Controllers
 
             return View(user);
         }
+
 
         public IActionResult Login() => View();
 
@@ -59,7 +81,7 @@ namespace SYSDIVA_TAXATION.Controllers
             LoginUsers dbUser = null;
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM Users WHERE Email = @Email";
+                string query = "SELECT * FROM LoginUsers WHERE Email = @Email";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@Email", user.Email);
                 con.Open();
@@ -97,7 +119,7 @@ namespace SYSDIVA_TAXATION.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    return RedirectToAction("Welcome");
+                    return RedirectToAction("Home","Index");
                 }
             }
 
