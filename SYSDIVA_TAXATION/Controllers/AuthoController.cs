@@ -119,7 +119,7 @@ namespace SYSDIVA_TAXATION.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    return RedirectToAction("Home","Index");
+                    return RedirectToAction("Index", "Student");
                 }
             }
 

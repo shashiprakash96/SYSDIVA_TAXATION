@@ -72,7 +72,7 @@ namespace SYSDIVA_TAXATION
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Autho}/{action=Login}/{id?}");
             });
         }
     }

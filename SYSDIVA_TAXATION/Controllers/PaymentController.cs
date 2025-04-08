@@ -2,6 +2,7 @@
 using QRCoder;
 using SkiaSharp;
 using System;
+
 using System.Collections.Generic;
 
 using System.Drawing.Imaging;
@@ -15,38 +16,52 @@ namespace SYSDIVA_TAXATION.Controllers
     {
         public IActionResult Index() => View();
 
-        //[HttpPost]
-        //public IActionResult Generate(string qrText)
-        //{
-        //    using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-        //    using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q))
-        //    {
-        //        var qrCode = new SkiaSharpQRCode(qrCodeData);
-        //        using (var image = qrCode.GetGraphic(20))
-        //        using (var ms = new MemoryStream())
-        //        {
-        //            image.Encode(ms, SKEncodedImageFormat.Png, 100);
-        //            var base64 = Convert.ToBase64String(ms.ToArray());
-        //            ViewBag.QrCodeImage = "data:image/png;base64," + base64;
-        //        }
-        //    }
-
-        //    return View("Index");
-        //}
-
-        private class SkiaSharpQRCode
+        [HttpPost]
+        public IActionResult Generate(string qrText)
         {
-            private QRCodeData qrCodeData;
-
-            public SkiaSharpQRCode(QRCodeData qrCodeData)
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q))
             {
-                this.qrCodeData = qrCodeData;
+                var qrCode = new SkiaSharpQRCode(qrCodeData);
+
+                using (SKImage image = qrCode.GetGraphic(20))
+                {
+                    if (image == null)
+                    {
+                        ViewBag.Error = "Failed to generate QR image.";
+                        return View("Index");
+                    }
+
+                    using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))
+                    using (var ms = new MemoryStream())
+                    {
+                        data.SaveTo(ms);
+                        var base64 = Convert.ToBase64String(ms.ToArray());
+                        ViewBag.QrCodeImage = "data:image/png;base64," + base64;
+                    }
+                }
             }
 
-            internal IDisposable GetGraphic(int v)
-            {
-                throw new NotImplementedException();
-            }
+            return View("Index");
+        }
+
+
+
+
+    }
+
+    internal class SkiaSharpQRCode
+    {
+        private QRCodeData qrCodeData;
+
+        public SkiaSharpQRCode(QRCodeData qrCodeData)
+        {
+            this.qrCodeData = qrCodeData;
+        }
+
+        internal SKImage GetGraphic(int v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

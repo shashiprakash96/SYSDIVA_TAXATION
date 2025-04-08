@@ -43,38 +43,42 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Test" asp-action="StartTest">OnlineTest</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="NewRegistration" asp-action="List">NewRegistration</a>
+                    </li>
                 </ul>
 
-                <ul class="navbar-nav">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li class="nav-item">
-                            <span class="navbar-text text-white me-3">
-                                Welcome, @User.Identity.Name!
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-                        </li>
-                    }
 
-                </ul>
+                @*@if (User.Identity.IsAuthenticated)
+            {
+                <div class="text-end p-3 bg-light border-bottom">
+                    <p class="mb-0 fw-bold">Email: @ViewBag.UserEmail</p>
+                </div>
+            }*@
+            </div>
+            <ul class="navbar-nav">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <div class="text-end p-3 bg-light border-bottom">
-                        <p class="mb-0 fw-bold">Email: @ViewBag.UserEmail</p>
-                    </div>
+                    <li class="nav-item">
+                        <span class="navbar-text text-white me-3">
+                            Welcome, @User.Identity.Name!
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                    </li>
                 }
-            </div>
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+                    </li>
+                }
+
+            </ul>
         </div>
     </nav>
 
@@ -89,7 +93,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - SYSDIVA_TAXATION - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - S.P PVT LTD - <a asp-area="" asp-controller="Home" asp-action="Privacy">SPC</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
