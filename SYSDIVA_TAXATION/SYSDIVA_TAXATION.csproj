@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.Reporting" Version="2.1.0" />
     <PackageReference Include="ClosedXML" Version="0.104.2" />
     <PackageReference Include="EPPlus" Version="7.7.0" />
     <PackageReference Include="EpplusExcel" Version="1.0.0" />
@@ -20,6 +21,10 @@
     <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="SkiaSharp" Version="3.116.1" />
 	  
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Report\" />
   </ItemGroup>
 
 </Project>

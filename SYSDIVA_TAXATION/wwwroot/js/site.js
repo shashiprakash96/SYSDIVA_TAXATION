@@ -12,7 +12,7 @@
                 let row = '';
                 $.each(data, function (index, user) {
                     row += `<tr>
-                     <td>${user.id}</td>
+                     <td><input type="checkbox" name="selectedIds" value="@user.Id" class="selectItem" />${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.age}</td>

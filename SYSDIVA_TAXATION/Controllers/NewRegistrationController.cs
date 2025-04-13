@@ -5,6 +5,8 @@ using SYSDIVA_TAXATION.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
@@ -41,7 +43,6 @@ namespace SYSDIVA_TAXATION.Controllers
             return View(model);
         }
 
-        [HttpPost]
         public IActionResult Create(UserViewModel model)
         {
             if (ModelState.IsValid)
@@ -53,10 +54,25 @@ namespace SYSDIVA_TAXATION.Controllers
                 cmd.Parameters.AddWithValue("@Name", model.Name);
                 cmd.Parameters.AddWithValue("@Email", model.Email);
                 cmd.ExecuteNonQuery();
-                return RedirectToAction("Index","Student");
+
+                // Send email with Registration ID
+                try
+                {
+                    SendEmail(model.Email, model.RegistrationId);
+                }
+                catch (Exception ex)
+                {
+                    // Handle/log error (optional)
+                    Console.WriteLine($"Email failed: {ex.Message}");
+                }
+
+                return RedirectToAction("Index", "Student");
             }
             return View(model);
         }
+
+        
+
         public IActionResult List()
         {
             List<UserViewModel> users = new List<UserViewModel>();
@@ -77,6 +93,31 @@ namespace SYSDIVA_TAXATION.Controllers
             }
 
             return View(users);
+        }
+        private void SendEmail(string toEmail, long registrationId)
+        {
+            var fromAddress = new MailAddress("shashiprkash9133@gmail.com", "Your App Name");
+            var toAddress = new MailAddress(toEmail);
+            const string fromPassword = "your-email-password"; // Use a secure way in production
+            const string subject = "Your Registration ID";
+            string body = $"Dear user,\n\nYour registration ID is: {registrationId}\n\nThank you for registering!";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.your-email-provider.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+
+            using var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body
+            };
+            smtp.Send(message);
         }
 
 

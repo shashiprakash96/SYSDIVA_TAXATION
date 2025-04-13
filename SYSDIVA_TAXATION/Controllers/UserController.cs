@@ -6,6 +6,7 @@ using SYSDIVA_TAXATION.Models;
 using SYSDIVA_TAXATION.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
@@ -139,7 +140,16 @@ namespace SYSDIVA_TAXATION.Controllers
             }
             return Ok(user);
         }
-      
+        [HttpPost]
+        public IActionResult DeleteSelected(List<int> selectedIds)
+        {
+            _userRepository.DeleteSelected(selectedIds); // Call your method
+
+            return RedirectToAction("Index"); // Or whatever list view you return
+        }
+
+
+
 
     }
 

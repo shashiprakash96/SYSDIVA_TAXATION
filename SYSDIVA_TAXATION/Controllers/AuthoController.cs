@@ -132,7 +132,7 @@ namespace SYSDIVA_TAXATION.Controllers
         {
             ViewBag.User = HttpContext.User.Identity.Name;
             ViewBag.Email = HttpContext.Session.GetString("UserEmail");
-            return View();
+            return RedirectToAction();
         }
 
         public async Task<IActionResult> Logout()

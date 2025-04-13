@@ -395,7 +395,24 @@ namespace SYSDIVA_TAXATION.Repositories
             }
         }
 
+        
+        public void DeleteSelected(List<int> selectedIds)
+        {
+            if (selectedIds != null && selectedIds.Count > 0)
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    string ids = string.Join(",", selectedIds);
+                    string query = $"DELETE FROM Users WHERE Id IN ({ids})";
+                    SqlCommand cmd = new SqlCommand(query, conn);
 
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            
+        }
 
     }
 }
