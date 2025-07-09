@@ -37,6 +37,12 @@
     }
 </style>
 <h3>Search Students</h3>
+<form asp-action="GetUsers" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchTerm" class="form-control" placeholder="Search by Name..." value="@Context.Request.Query["searchTerm"]" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
 <input type="text" id="searchBox" placeholder="Search by name or email...">
 <table id="userTable" class="table table-bordered">
     <thead>

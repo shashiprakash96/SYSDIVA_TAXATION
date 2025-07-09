@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
 {
+    //[Authorize]
     public class AuthoController : Controller
     {
         private readonly string _connectionString;
@@ -25,8 +26,9 @@ namespace SYSDIVA_TAXATION.Controllers
             _connectionString = configuration.GetConnectionString("DefaultConnection");
             _passwordHasher = passwordHasher;
         }
-
+        [HttpGet]
         public IActionResult Register() => View();
+
 
         [HttpPost]
         public IActionResult Register(LoginUsers user)
@@ -71,7 +73,6 @@ namespace SYSDIVA_TAXATION.Controllers
 
             return View(user);
         }
-
 
         public IActionResult Login() => View();
 
@@ -141,6 +142,86 @@ namespace SYSDIVA_TAXATION.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword(LoginUsers user)
+        {
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                ViewBag.Message = "Email is required.";
+                return View();
+            }
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+
+                string checkQuery = "SELECT COUNT(*) FROM LoginUsers WHERE Email = @Email";
+                using (SqlCommand cmd = new SqlCommand(checkQuery, con))
+                {
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    int count = (int)cmd.ExecuteScalar();
+
+                    if (count == 0)
+                    {
+                        ViewBag.Message = "Email not found.";
+                        return View();
+                    }
+                }
+            }
+
+            // Redirect to ResetPassword form
+            TempData["ResetEmail"] = user.Email;
+            return RedirectToAction("ResetPassword");
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword()
+        {
+            var email = TempData["ResetEmail"]?.ToString();
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("ForgotPassword");
+
+            var user = new LoginUsers { Email = email };
+            return View(user);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(LoginUsers user)
+        {
+            if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+            {
+                ViewBag.Message = "Invalid data.";
+                return View();
+            }
+
+            var hashedPassword = _passwordHasher.HashPassword(user, user.Password);
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+
+                string updateQuery = "UPDATE LoginUsers SET Password = @Password WHERE Email = @Email";
+                using (SqlCommand cmd = new SqlCommand(updateQuery, con))
+                {
+                    cmd.Parameters.AddWithValue("@Password", hashedPassword);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            ViewBag.Message = "Password updated successfully.";
+            return RedirectToAction("Login");
+        }
+
 
     }
 }

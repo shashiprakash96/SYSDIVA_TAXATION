@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QRCoder;
 using SkiaSharp;
 using System;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
 {
+    [Authorize]
     public class PaymentController : Controller
     {
         public IActionResult Index() => View();

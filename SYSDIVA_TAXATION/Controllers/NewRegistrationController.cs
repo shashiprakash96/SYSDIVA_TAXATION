@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SYSDIVA_TAXATION.Models;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
 {
+    [Authorize]
     public class NewRegistrationController : Controller
     {
         private readonly string _connectionString;
@@ -66,7 +68,7 @@ namespace SYSDIVA_TAXATION.Controllers
                     Console.WriteLine($"Email failed: {ex.Message}");
                 }
 
-                return RedirectToAction("Index", "Student");
+                return RedirectToAction("Index", "NewRegistration");
             }
             return View(model);
         }

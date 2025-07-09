@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
 {
+    [Authorize]
     public class GSTController : Controller
     {
         private readonly UserRepository _userRepository;

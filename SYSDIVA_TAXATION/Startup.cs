@@ -35,7 +35,9 @@ namespace SYSDIVA_TAXATION
     .AddCookie(options =>
     {
         options.LoginPath = "/Autho/Login";
+        //options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+
     });
 
             services.AddSession();
@@ -58,21 +60,22 @@ namespace SYSDIVA_TAXATION
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseSession();
-            app.UseAuthentication();
-           
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseAuthorization();
-            app.UseRouting();
+            app.UseHttpsRedirection();      // Redirect HTTP to HTTPS
+            app.UseStaticFiles();           // Serve static files (CSS, JS, images)
 
-           
+            app.UseRouting();               // Add route matching to the middleware pipeline
+
+            app.UseAuthentication();        // Authenticate before authorizing
+            app.UseAuthorization();         // Enforce authorization rules
+            app.UseSession();
+
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Autho}/{action=Login}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

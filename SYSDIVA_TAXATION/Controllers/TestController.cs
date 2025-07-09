@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SYSDIVA_TAXATION.Models;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
 {
+    [Authorize]
     public class TestController : Controller
     {
         private readonly string _connectionString;

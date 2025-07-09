@@ -29,9 +29,14 @@ namespace SYSDIVA_TAXATION.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetUsers()
+        public JsonResult GetUsers(string searchTerm)
         {
             List<Users> users = _userRepository.GetUsers();
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                users = users.Where(u => u.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+           
             return Json(users);
         }
         public IActionResult ExportToExcel()

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SYSDIVA_TAXATION.Models;
 using SYSDIVA_TAXATION.Repositories;
 using System;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SYSDIVA_TAXATION.Controllers
 {
+    [Authorize]
     public class BillingController : Controller
     {
         private readonly UserRepository _userRepository;
