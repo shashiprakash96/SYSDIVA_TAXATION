@@ -120,6 +120,11 @@ function DeleteUser(id) {
 
 
 
+
+
+
+
+
     // Export Users all data  to Excel
     function downloadExcel() {
         window.location.href = "/User/ExportToExcel";

@@ -22,7 +22,7 @@ namespace SYSDIVA_TAXATION.Controllers
         {
             _userRepository = userRepository;
         }
-
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -91,6 +91,11 @@ namespace SYSDIVA_TAXATION.Controllers
             if (user == null)
             {
                 return BadRequest("Invalid user data.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // return validation errors
             }
 
             bool result = _userRepository.InsertUser(user);
